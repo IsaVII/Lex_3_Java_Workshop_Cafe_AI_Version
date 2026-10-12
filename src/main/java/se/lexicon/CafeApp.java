@@ -13,25 +13,39 @@ public class CafeApp {
     private static final double VAT_RATE = 0.12;
 
     static void main() {
-        String name = askName();
-        IO.println("Hi " + name + "! Here is our menu:");
-        IO.println("");
-        printMenu();
+        int customersServed = 0;
+        double totalRevenue = 0.0;
 
-        int itemIndex = askItemNumber();
-        int quantity = askQuantity();
-        boolean isMember = askLoyaltyMembership();
+        while (true) {
+            String name = askName();
+            if (name.trim().equalsIgnoreCase("done")) {
+                break;
+            }
 
-        double subtotal = calculateSubtotal(ITEM_PRICES[itemIndex], quantity);
-        double discount = calculateDiscount(subtotal, isMember);
-        double vat = calculateVat(subtotal - discount);
-        double total = calculateTotal(subtotal, discount, vat);
+            IO.println("Hi " + name + "! Here is our menu:");
+            IO.println("");
+            printMenu();
 
-        printReceipt(name, ITEM_NAMES[itemIndex], quantity, subtotal, discount, vat, total);
+            int itemIndex = askItemNumber();
+            int quantity = askQuantity();
+            boolean isMember = askLoyaltyMembership();
+
+            double subtotal = calculateSubtotal(ITEM_PRICES[itemIndex], quantity);
+            double discount = calculateDiscount(subtotal, isMember);
+            double vat = calculateVat(subtotal - discount);
+            double total = calculateTotal(subtotal, discount, vat);
+
+            printReceipt(name, ITEM_NAMES[itemIndex], quantity, subtotal, discount, vat, total);
+
+            customersServed++;
+            totalRevenue += total;
+        }
+
+        printEndOfDayReport(customersServed, totalRevenue);
     }
 
     private static String askName() {
-        return IO.readln("Welcome! What is your name? ");
+        return IO.readln("Next customer name (or 'done' to close): ");
     }
 
     private static void printMenu() {
@@ -106,5 +120,18 @@ public class CafeApp {
 
     private static void printLine(String label, String value) {
         IO.println(String.format("%-10s: %s", label, value));
+    }
+
+    private static void printEndOfDayReport(int customersServed, double totalRevenue) {
+        IO.println("=".repeat(30));
+        IO.println("      END OF DAY REPORT");
+        IO.println("=".repeat(30));
+        printSummaryLine("Customers served", String.valueOf(customersServed));
+        printSummaryLine("Total revenue", String.format(Locale.US, "%.2f SEK", totalRevenue));
+        IO.println("=".repeat(30));
+    }
+
+    private static void printSummaryLine(String label, String value) {
+        IO.println(String.format("%-17s: %s", label, value));
     }
 }
