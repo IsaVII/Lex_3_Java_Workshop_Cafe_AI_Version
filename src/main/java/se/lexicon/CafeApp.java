@@ -21,16 +21,23 @@ public class CafeApp {
             IO.println("");
             printMenu();
 
-            int itemIndex = askItemNumber();
-            int quantity = askQuantity();
             boolean isMember = askLoyaltyMembership();
+            IO.println("");
 
             Order order = new Order();
             order.customerName = name;
-            order.itemName = ITEM_NAMES[itemIndex];
-            order.unitPrice = ITEM_PRICES[itemIndex];
-            order.quantity = quantity;
             order.member = isMember;
+
+            while (true) {
+                int itemIndex = askItemNumberOrFinish();
+                if (itemIndex == -1) {
+                    break;
+                }
+                int quantity = askQuantity();
+                order.addItem(ITEM_NAMES[itemIndex], ITEM_PRICES[itemIndex], quantity);
+                IO.println(ITEM_NAMES[itemIndex] + " added.");
+                IO.println("");
+            }
 
             order.printReceipt();
 
@@ -57,14 +64,17 @@ public class CafeApp {
         IO.println("");
     }
 
-    private static int askItemNumber() {
+    private static int askItemNumberOrFinish() {
         while (true) {
-            String input = IO.readln("Enter item number (1-5): ");
+            String input = IO.readln("Enter item number (1-5, or 0 to finish): ");
             try {
                 int itemNumber = Integer.parseInt(input.trim());
-                if (itemNumber < 1 || itemNumber > ITEM_NAMES.length) {
-                    IO.println("Please enter a number between 1 and " + ITEM_NAMES.length + ".");
+                if (itemNumber < 0 || itemNumber > ITEM_NAMES.length) {
+                    IO.println("Please enter a number between 0 and " + ITEM_NAMES.length + ".");
                     continue;
+                }
+                if (itemNumber == 0) {
+                    return -1;
                 }
                 return itemNumber - 1;
             } catch (NumberFormatException e) {

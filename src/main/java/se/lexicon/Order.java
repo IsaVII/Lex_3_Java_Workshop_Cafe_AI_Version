@@ -1,5 +1,6 @@
 package se.lexicon;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class Order {
@@ -10,13 +11,23 @@ public class Order {
     private static final double VAT_RATE = 0.12;
 
     public String customerName;
-    public String itemName;
-    public double unitPrice;
-    public int quantity;
     public boolean member;
+    public ArrayList<LineItem> items = new ArrayList<>();
+
+    public void addItem(String itemName, double unitPrice, int quantity) {
+        LineItem lineItem = new LineItem();
+        lineItem.itemName = itemName;
+        lineItem.unitPrice = unitPrice;
+        lineItem.quantity = quantity;
+        items.add(lineItem);
+    }
 
     public double calculateSubtotal() {
-        return unitPrice * quantity;
+        double subtotal = 0.0;
+        for (LineItem item : items) {
+            subtotal += item.lineTotal();
+        }
+        return subtotal;
     }
 
     public double calculateDiscount() {
@@ -49,7 +60,11 @@ public class Order {
         IO.println("      LEXICON CAFE");
         IO.println("=".repeat(30));
         printLine("Customer", customerName);
-        printLine("Item", itemName + " x " + quantity);
+        IO.println("-".repeat(30));
+        for (LineItem item : items) {
+            IO.println(String.format(Locale.US, "  %-16sx%-5d%.2f SEK", item.itemName, item.quantity, item.lineTotal()));
+        }
+        IO.println("-".repeat(30));
         printLine("Subtotal", String.format(Locale.US, "%.2f SEK", subtotal));
         if (discount > 0) {
             printLine("Discount", String.format(Locale.US, "-%.2f SEK", discount));
