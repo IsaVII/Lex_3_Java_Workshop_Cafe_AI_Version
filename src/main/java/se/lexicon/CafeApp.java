@@ -61,18 +61,48 @@ public class CafeApp {
     }
 
     private static int askItemNumber() {
-        String input = IO.readln("Enter item number (1-5): ");
-        return Integer.parseInt(input.trim()) - 1;
+        while (true) {
+            String input = IO.readln("Enter item number (1-5): ");
+            try {
+                int itemNumber = Integer.parseInt(input.trim());
+                if (itemNumber < 1 || itemNumber > ITEM_NAMES.length) {
+                    IO.println("Please enter a number between 1 and " + ITEM_NAMES.length + ".");
+                    continue;
+                }
+                return itemNumber - 1;
+            } catch (NumberFormatException e) {
+                IO.println("Please enter a valid number.");
+            }
+        }
     }
 
     private static int askQuantity() {
-        String input = IO.readln("How many? ");
-        return Integer.parseInt(input.trim());
+        while (true) {
+            String input = IO.readln("How many? ");
+            try {
+                int quantity = Integer.parseInt(input.trim());
+                if (quantity <= 0) {
+                    IO.println("Quantity must be greater than zero.");
+                    continue;
+                }
+                return quantity;
+            } catch (NumberFormatException e) {
+                IO.println("Please enter a valid number.");
+            }
+        }
     }
 
     private static boolean askLoyaltyMembership() {
-        String input = IO.readln("Loyalty member? (yes/no): ");
-        return input.trim().equalsIgnoreCase("yes");
+        while (true) {
+            String input = IO.readln("Loyalty member? (yes/no): ").trim();
+            if (input.equalsIgnoreCase("yes")) {
+                return true;
+            }
+            if (input.equalsIgnoreCase("no")) {
+                return false;
+            }
+            IO.println("Please enter 'yes' or 'no'.");
+        }
     }
 
     private static double calculateSubtotal(double unitPrice, int quantity) {
